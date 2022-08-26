@@ -1,0 +1,62 @@
+% MATLAB interface to spherical harmonics in Fortran.
+% Barnett 7/31/15
+% updated for projloc3d, no workspace, nz!=nph, 9/1/15
+% [added lsqsolve 3/1/16.] Removed and cut down to basics, 8/25/22.
+
+% =============================================================================
+@function cnm = spharmproj(u, z, w, P)
+% SPHARMPROJ  projects function on tensor grid on S2 into degree<=P sph harms
+%
+% cnm = spharmproj(u, z, w, P)
+% Inputs:
+%  u = complex M*N array of values on grid, with z being fast (1st index), phi
+%        slow (2nd index). The phi grid values are assumed to be 2pi*(0:N-1)/N,
+%        ie, zero-indexed.
+%  z,w = length-M lists of quadrature nodes and weights in z=cos(theta)
+%  P = maximum degree of harmonic projection.
+% Outputs:
+%  cnm = complex coefficients returned in rectangular (P+1)-by-(2P+1) array;
+%        only around half the entries are used, due to the triangular shape.
+%        Eg c(0,0) is cnm(1,P+1), while c(1,-1) is at cnm(2,P), etc.
+%
+% See also: FLATTENCNM
+
+[nz nph] = size(u);
+if numel(z)~=nz, error('number of z nodes must match # rows of u!'); end
+if numel(w)~=nz, error('number of z weights must match # rows of u!'); end
+if isreal(u), u = complex(u); end
+u = u.';               % fix to Leslie's phi-fast z-slow ordering.
+P1 = P+1; P2 = 2*P+1;  % size of local coeffs output array
+
+# FORTRAN projloc3d(int P, int P, int nz, int nph, double[nz] z, double[nz] w, dcomplex[nph,nz] u, output dcomplex[P1,P2] cnm);
+
+% tidy up cnm: just zero the bad values for now incase are unassigned
+for n=0:P, for m=[-P:-n-1, n+1:P], cnm(n+1,P+1-m) = 0; end, end
+
+
+% =============================================================================
+@function u = spharmgridevalf(cnm,z,phi)
+% SPHARMGRIDEVALF  evaluate spherical harmonic expansion on tensor grid on S2.
+%
+% u = spharmgridevalf(cnm,z,phi) evaluates u a M*N complex array given size-M
+%  grid of z, and size-N grid of phi, defining a tensor-product grid on the
+%  sphere, and the length-(P+1)^2 list of coefficients c_nm.
+% 
+%     u =    sum      sum  c_nm Y_nm(theta,phi)   where z = cos(theta)
+%           n=0..P  |m|<=n
+%
+%  The fast (row) index of u is z, the slow (col) is phi, and normalization
+%  matches projloc3d.
+%
+% Notes: MEX interface to Leslie's shevalsphere. Run spharmgrideval for test.
+%
+% See also: SPHARMGRIDEVAL (all-Matlab version)
+
+local = stackcnm(cnm);
+[P1 P2] = size(local);
+P = P1-1;
+nquad = numel(z);
+nquadm = numel(phi);
+# FORTRAN shevalsphere(dcomplex[P1,P2] local, output dcomplex[nquadm,nquad] u, int P, int P, int nquad, int nquadm, double[nquad] z);
+u = u.';  % make z fast, phi slow
+
