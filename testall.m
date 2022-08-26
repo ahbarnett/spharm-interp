@@ -1,4 +1,4 @@
-% all matlab self-tests
+% all matlab self-tests, for spharm-interp pkg
 
 spharmproj_test
 flattencnm

@@ -41,5 +41,5 @@ n = 27; m = 5;                                    % a single spherical harmonic
 f = @(z,phi) legendrenm(n,m,z) .* exp(1i*m*phi);
 PP=(P+1)^2; ce=zeros(P+1,2*P+1); ce(n+1,P+1+m) = 1; ce = flattencnm(ce); % true
 ce = -ce/sqrt(2);                      % empirical prefactor!
-[cnm err] = spharmprojfunc(f,P,'show');
+figure; [cnm err] = spharmprojfunc(f,P,'show');
 fprintf('cnm err vs true coeffs = %.3g,  claimed err = %.3g\n',norm(cnm-ce),err)

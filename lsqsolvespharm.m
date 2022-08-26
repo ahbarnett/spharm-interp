@@ -124,7 +124,7 @@ m = 1e6;    % # pts on S^2
 z = rand(m,1)*2-1; phi = 2*pi*rand(m,1);   % iid rand pts on S2
 % a blob function (width & placement is crucial for cnm coeff decay):
 f = @(z,phi) exp(-0.5*((z-.2).^2+(phi-1.3).^2)/0.15^2);
-[cnme err] = spharmprojfunc(f,P,'show'); drawnow
+figure; [cnme err] = spharmprojfunc(f,P,'show'); drawnow
 fprintf('P=%d func proj err %.3g\n',P,err)
 fprintf('eval m=%d data points... ',m)
 b = f(z,phi);    % noise-free data vector
@@ -134,4 +134,5 @@ fprintf('\nLSQ solve (wait a few secs)... ')
 o.verb = 1; cnm = lsqsolvespharm(b, z, phi, P, o);
 fprintf('rel l2 coeff err %.3g\n',norm(cnm-cnme)/norm(cnme))
 
+% timing: P=30, m=1e6: 5 sec.
 % timing: P=100, m=1e7: 4 mins (varies 100% to 800% CPU), ~20 GB RAM

@@ -38,7 +38,6 @@ grid off
 if nargin<3, sc = max(ushow(:)); end
 if sc>0, caxis(sc*[0 1]); end
 colorbar; view(135,30); light; %zoom(1.5)  % Alex's defaults
-% Marina's versions: view(100,260); view(65,190); zoom(1.5)
 
 %%%%%
 function test_showsphgrid
@@ -48,5 +47,5 @@ ph =  2*pi*(0:N-1)/N;
 deg = 4; ord = 3; ym = legendre(deg,z); y = ym(ord+1,:);
 u = bsxfun(@times, y(:), exp(1i*ord*ph(:)'));
 max(real(u(:)))
-showsphgrid(u,z)
-showsphgrid(u,z,1); title('sc=1')
+figure; showsphgrid(u,z)
+%showsphgrid(u,z,1); title('sc=1')
