@@ -8,3 +8,4 @@ spharmgrideval
 spharmprojfunc
 spharmmat
 lsqsolvespharm
+spharmeval

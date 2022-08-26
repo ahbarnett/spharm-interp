@@ -16,6 +16,7 @@ From MATLAB try `lsqsolvespharm` to test (takes a few seconds).
 ### Main routines available from MATLAB:
 
 `lsqsolvespharm` : iterative LSQ solve of sph harm coeffs to match data at arbitrary scattered points on sphere  
+`spharmeval` : evaluate spherical harmonic expansion at arbitrary sphere points (not performance code)  
 `spharmgrideval` : evaluate sph harm expansion on grid (pure MATLAB version)  
 `spharmgridevalf` : evaluate sph harm expansion on grid (MEX interface version)  
 `spharmproj` : project grid data on the sphere onto spherical harmonic coeffs (MEX interface)  

@@ -36,7 +36,7 @@ axis vis3d;
 %xlabel('x'); ylabel('y'); zlabel('z'); 
 grid off
 if nargin<3, sc = max(ushow(:)); end
-if sc>0, caxis(sc*[0 1]); end
+if sc>0, caxis(sc*[-1 1]); end
 colorbar; view(135,30); light; %zoom(1.5)  % Alex's defaults
 
 %%%%%
