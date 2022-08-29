@@ -11,21 +11,21 @@ function [cnm resvec] = lsqsolvespharm(b, z, phi, P, o)
 %  define the a function on S^2 that is the spherical harmonic expansion with
 %  length-(P+1)^2 coefficient vector c. Let (z,phi) define a point on S^2.
 %
-%  Then the routine returns
+%  Then, given data b_i at points (z_i,phi_i), i=1,..,M, the routine returns
 %
-%        \hat{c}  =     arg min     \sum_{i=1}^m | b_i - S[c](z_i,\phi_i)|^2
+%        \hat{c}  =     arg min     \sum_{i=1}^M | b_i - S[c](z_i,\phi_i)|^2
 %                   c in C^{(P+1)^2}
 %
 %  ie the least-squares solution to Ac=b where A is the matrix of spherical
 %  harmonics evaluated at the data points.
 %
-%  It uses a fast algorithm that is O(m + P^3) where m is number of data points
-%  (see meth='f' below). The m prefactor is roughly 10^-5, ie 1e5 points/sec
+%  It uses a fast algorithm that is O(M + P^3) where M is number of data points
+%  (see meth='f' below). The M prefactor is roughly 10^-5, ie 1e5 points/sec
 %  to fill the sparse interpolation matrix (single-core).
 %
 % Inputs:
-%   b = complex length-m vector of values on points (the data values).
-%   z,phi = length-m vectors of z and phi locations of data points on S^2.
+%   b = complex length-M vector of values on points (the data values).
+%   z,phi = length-M vectors of z and phi locations of data points on S^2.
 %   P = maximum degree of spherical harmonic projections.
 %
 % Outputs:
@@ -36,10 +36,10 @@ function [cnm resvec] = lsqsolvespharm(b, z, phi, P, o)
 % cnm = lsqsolvespharm(b, z, phi, P, opts) controls various options such as:
 %     opts.verb = 0,1,.. amount of text or figure feedback (0=none, etc)
 %     opts.meth = 'f' conjugate gradient (CG) on normal eqns, fast sparse
-%                     interpolation matrix apply. (Default.) O(m + P^3)
+%                     interpolation matrix apply. (Default.) O(M + P^3)
 %                     If not overdetermined, may fail to converge.
-%                 'l' plain dense least-squares solve on matrix, O(m.P^4)
-%                 'n' CG on normal equations, dense apply matrix, O(m.P^2)
+%                 'l' plain dense least-squares solve on matrix, O(M.P^4)
+%                 'n' CG on normal equations, dense apply matrix, O(M.P^2)
 %                     If not overdetermined, may fail to converge.
 %                 'd' disc-patch-averaging & projection (obsolete)
 %   To control accuracy in meth='f', you could vary:
@@ -51,11 +51,13 @@ function [cnm resvec] = lsqsolvespharm(b, z, phi, P, o)
 %     opts.regparam = multiple of identity to regularize normal eqns by.
 % Unspecified options are given sensible default values.
 %
+% See also: DEMO
+
 % See also: devel/explore_lsq.m for development & more tests.
 %
 % Barnett 8/12/15
 % 0-indexed phi grid, better rect grid for proj, 9/1/15.
-% regularization testing 8/30/16
+% regularization testing 8/30/16. notation clash resolved m->M 8/27/22.
 if nargin==0, test_lsqsolvespharm; return; end
 if nargin<5, o = []; end
 if ~isfield(o,'meth'), o.meth = 'f'; end
@@ -120,7 +122,7 @@ end
 
 function test_lsqsolvespharm
 P = 30;     % max degree (enough to capture the below f to 1e-6)
-m = 1e6;    % # pts on S^2
+m = 1e5;    % # pts on S^2
 z = rand(m,1)*2-1; phi = 2*pi*rand(m,1);   % iid rand pts on S2
 % a blob function (width & placement is crucial for cnm coeff decay):
 f = @(z,phi) exp(-0.5*((z-.2).^2+(phi-1.3).^2)/0.15^2);
@@ -131,8 +133,9 @@ b = f(z,phi);    % noise-free data vector
 %b = b + 10*randn(size(b));  % add noise?
 fprintf('\nLSQ solve (wait a few secs)... ')
 %o.meth = 'n';
-o.verb = 1; cnm = lsqsolvespharm(b, z, phi, P, o);
+o.verb = 1; [cnm resvec] = lsqsolvespharm(b, z, phi, P, o);
+resvec
 fprintf('rel l2 coeff err %.3g\n',norm(cnm-cnme)/norm(cnme))
 
-% timing: P=30, m=1e6: 5 sec.
-% timing: P=100, m=1e7: 4 mins (varies 100% to 800% CPU), ~20 GB RAM
+% timing: P=30, m=1e6: 4 iters, 5 sec.
+% timing: P=100, m=1e7: 90 sec (varies 1-16 threads), 5 iters, ~30 GB RAM

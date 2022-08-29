@@ -31,13 +31,15 @@ yy = repmat(sin(phi),[M+2 1]) .* rr;
 zz = repmat(z,[1 N+1]);
 ushow = real(u);   % what to show
 %figure(1); 
-surf(xx,yy,zz,'cdata', ushow); shading interp
+surf(xx,yy,zz,'cdata', ushow); shading interp; lighting gouraud
 axis vis3d; 
-%xlabel('x'); ylabel('y'); zlabel('z'); 
+xlabel('x'); ylabel('y'); zlabel('z'); 
 grid off
 if nargin<3, sc = max(ushow(:)); end
 if sc>0, caxis(sc*[-1 1]); end
-colorbar; view(135,30); light; %zoom(1.5)  % Alex's defaults
+colorbar; light;
+%view(135,30); %zoom(1.5)  % Alex's defaults. Better leave matlab default view
+
 
 %%%%%
 function test_showsphgrid
