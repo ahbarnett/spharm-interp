@@ -1,5 +1,5 @@
 # Linux/OSX makefile for spharm-interp MEX compilation.
-# cut down from cryo work 2015-2016; Alex Barnett.
+# cut down from 2015 version, Aug 2022, Alex Barnett.
 
 # ===== system-dependent settings : please adjust =====
 FC = gfortran
@@ -16,6 +16,8 @@ OMPLIBS = -lgomp
 MEX = mex
 # Mac users should use something like this:
 #MEX = /Applications/MATLAB_R2014a.app/bin/mex
+# Or for Octave use
+#MEX = mkoctfile --mex
 
 # Linux users:
 MEXFLAGS = -largeArrayDims -lgfortran -lm $(OMPLIBS)
