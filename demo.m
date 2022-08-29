@@ -26,6 +26,7 @@ fSH = spharmeval(coeffs, z, phi);
 rmsr = norm(fSH-y)/sqrt(M);
 fprintf('done in %.3g s. RMS residual = %.3g (cf sigma=%.3g)\n',toc,rmsr,sigma)
 rmse = norm(fSH-ynoiseless)/sqrt(M);
-fprintf('RMS error vs noiseless func = %.3g (cf sigma*P/sqrt(M)=%.3g\n',rmse,sigma*P/sqrt(M))
+fprintf('RMS error vs noiseless func = %.3g (cf sigma*P/sqrt(M)=%.3g)\n',rmse,sigma*P/sqrt(M))
 
+% generate the plot used in the README:
 %print -dpng demo.png
