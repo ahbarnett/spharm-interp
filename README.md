@@ -42,6 +42,10 @@ On a laptop this takes about 0.15 sec to fit, and 1.3 sec to evaluate the expans
 
 For the full code with error reporting and plots see https://github.com/ahbarnett/spharm-interp/blob/main/demo.m
 
+**Warning**
+
+  The above took a very small 6 CG iterations to solve the linear system to 6 digits. However, if your data points do not well cover the sphere (at least down to the 1/P length scale), the system will probably be much poorer conditioned and may take a large number of iterations (this may manifest itself as a a "hang").
+
 
 ### Main routines available from MATLAB:
 
